@@ -1,0 +1,17 @@
+# Makefile.srcs
+#
+# This file is part of time_clean, a CASA task for cleaning images in which the source varies significantly in flux over the time of the observation.
+#
+# See the file COPYRIGHT for authorship and intellectual property rights.
+
+SRCS = \
+	src/errmsg.c\
+	src/sw_clean.c\
+	src/sw_fits_io.c\
+	src/sw_main.c\
+	src/sw_utils.c
+
+INCS = \
+	src/local_err.h\
+	src/sw_clean.h
+

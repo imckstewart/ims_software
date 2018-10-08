@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" ?>
+<casaxml xmlns="http://casa.nrao.edu/schema/psetTypes.html"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://casa.nrao.edu/schema/casa.xsd
+file:///opt/casa/code/xmlcasa/xml/casa.xsd">
+
+<task type="function" name="timeclean" category="imaging">
+
+  <shortdescription>Invert and deconvolve images where the source is time-varying</shortdescription>
+
+  <description>Form images from visibilities. Handles continuum cubes.</description>
+
+  <input>
+
+    <!--<param type="string" name="vis" kind="ms" mustexist="true">-->
+    <param type="any" name="vis" kind="ms" mustexist="true">
+    <description>Name of input visibility file</description>
+      <any type="variant" limittypes="string stringArray"/>
+      <value type="string"></value>
+    </param>
+
+    <param type="any" name="imagename">
+      <description>Pre-name of output images</description>
+      <any type="variant" limittypes="string stringArray"/>
+      <value type="string"></value>
+    </param>
+
+    <param type="int" name="niter">
+      <description>Maximum number of iterations</description>
+      <value>500</value>
+    </param>
+
+    <param type="double" name="gain">
+      <description>Loop gain for cleaning</description>
+      <value>0.1</value>
+    </param>
+
+    <param type="double" name="threshold" units="mJy">
+      <description>Flux level to stop cleaning, must include units: \'1.0mJy\'</description>
+      <value>0.0</value>
+    </param>
+
+    <param type="any" name="mask">
+	    <description>Cleanbox(es), mask image(s), region(s), or a level</description>
+	    <any type="variant"/>
+	    <value type="stringArray"></value>
+    </param>
+
+    <param type="intArray" name="imsize">
+	    <description>x and y image size in pixels.  Single value: same for both</description>
+	    <value type="vector">
+    <value>256</value><value>256</value>
+    </value>
+    </param>
+
+    <param type="doubleArray" name="cell" units="arcsec">
+    <description>x and y cell size(s). Default unit arcsec.</description>
+    <value type="vector"><value>1.0</value></value>
+    </param>
+
+    <param type="string" name="weighting">
+    <description>Weighting of uv (natural, uniform, briggs, ...)</description>
+    <value>natural</value>
+    <allowed kind="enum">
+      <value>natural</value>
+      <value>uniform</value>
+      <value>briggs</value>
+      <value>briggsabs</value>
+      <value>radial</value>
+      <value>superuniform</value>
+    </allowed>
+    </param>
+
+    <param type="double" name="robust" subparam="true">
+	    <description>Briggs robustness parameter</description>
+	    <value>0.0</value>
+	    <allowed kind="range">
+	    <value range="min">-2.0</value>
+	    <value range="max">2.0</value>
+    </allowed>
+    </param>
+
+    <param type="bool" name="uvtaper">
+	    <description>Apply additional uv tapering of visibilities</description>
+	    <value>False</value>
+    </param>
+
+    <param type="stringArray" name="outertaper" subparam="true">
+	    <description>uv-taper on outer baselines in uv-plane</description>
+	    <value type="vector">
+	      <value></value>
+	    </value>
+    </param>
+
+    <param type="stringArray" name="innertaper" subparam="true">
+	    <description>uv-taper in center of uv-plane (not implemented)</description>
+	    <value>1.0</value>
+    </param>
+
+    <param type="stringArray" name="restoringbeam">
+      <description>Output Gaussian restoring beam for CLEAN image</description>
+      <value></value>
+    </param>
+
+    <param type="any" name="noise"  subparam="true">
+	    <description>noise parameter for briggs abs mode weighting</description>
+	    <any type="variant"/>
+	    <value type="string">1.0Jy</value>	    
+    </param>
+
+    <param type="int" name="npixels" subparam="true">
+	    <description>number of pixels for superuniform or briggs weighting</description>
+	    <value>0</value>
+    </param>
+
+    <param type="int" name="nterms" subparam="true">
+	    <description>Number of Taylor coefficients to model the sky frequency dependence </description>
+	    <value>1</value>
+    </param>
+
+    <constraints>
+	    <when param="weighting">
+		<equals value="natural"/>
+	        <equals value="uniform"/>
+	        <equals value="briggs">
+			<default param="robust"><value>0.0</value></default>
+			<default param="npixels"><value>0</value>
+			    <description>number of pixels to determine uv-cell size 0=&gt; field of view</description>
+		    </default>
+	        </equals>
+		<equals value="briggsabs">
+			<default param="robust"><value>0.0</value></default>
+			<default param="noise"><value type="string">1.0Jy</value></default>
+			<default param="npixels"><value>0</value>
+			    <description>number of pixels to determine uv-cell size 0=&gt; field of view</description>
+		    </default>
+	        </equals>
+	        <equals value="superuniform">
+			<default param="npixels"><value>0</value>
+			    <description>number of pixels to determine uv-cell size 0=&gt; +/-3pixels</description>
+		    </default>
+	        </equals>
+            </when>
+	    <when param="uvtaper">
+		<equals type="bool" value="False"/>
+		<equals type="bool" value="True">
+			<default param="outertaper"><value type="vector"></value></default>
+			<default param="innertaper"><value type="vector"></value></default>
+	        </equals>
+            </when>
+    </constraints>
+
+    </input>
+
+  <returns type="void"/>
+
+</task>
+
+</casaxml>
